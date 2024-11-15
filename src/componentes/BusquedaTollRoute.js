@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { Grid,Grid2, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { filterTolls, getRoutesByCities } from '../services/tollrouteService';
+import Dosejes from '../tollRouteImage/Dosejes.png'; // Ajusta la ruta de la imagen
+import Dosejespeque from '../tollRouteImage/Dosejespeque.png'; // Ajusta la ruta de la imagen
+import Dosejesgrande from '../tollRouteImage/Dosejesgrande.png'; // Ajusta la ruta de la imagen
+import Tresejesgrande from '../tollRouteImage/Tresejesgrande.png'; // Ajusta la ruta de la imagen
+import Cuatroejesgrande from '../tollRouteImage/Cuatroejesgrande.png'; // Ajusta la ruta de la imagen
+import Cincoejesgrande from '../tollRouteImage/Cincoejesgrande.png'; // Ajusta la ruta de la imagen
+import Seisejesgrande from '../tollRouteImage/Seisejesgrande.png'; // Ajusta la ruta de la imagen
 
 
 export default function BusquedaTollRoute() {
@@ -8,30 +16,59 @@ export default function BusquedaTollRoute() {
     ciudadOrigen: '',
     ciudadDestino: '',
     ruta: '',
-    tipoEje: '',
   });
 
-  const handleChange = (e) => {
+  const [rutas, setRutas] = useState([]); // Estado para almacenar las rutas filtradas
+  const navigate = useNavigate();
+
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    // Si se seleccionan ambas ciudades, obtener las rutas
+    if (name === 'ciudadOrigen' || name === 'ciudadDestino') {
+      const { ciudadOrigen, ciudadDestino } = {
+        ...formData,
+        [name]: value,
+      };
+
+      // Solo obtener las rutas si ambas ciudades están seleccionadas
+      if (ciudadOrigen && ciudadDestino) {
+        const data = await getRoutesByCities(ciudadOrigen, ciudadDestino);
+        setRutas(data);
+      }
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Formulario enviado:', formData);
+
+    // Filtrar peajes basados en la ciudad de origen, destino y ruta seleccionada
+    const data = await filterTolls({
+      originCity: formData.ciudadOrigen,
+      destinationCity: formData.ciudadDestino,
+      routeName: formData.ruta,
+    });
+
+    if (data) {
+      alert('Búsqueda exitosa');
+      console.log('Peajes encontrados:', data);
+    } else {
+      alert('No se encontraron peajes con los filtros proporcionados.');
+    }
   };
 
-  const navigate = useNavigate();
-  
   const handleClick = () => {
-      // Redirigir a otra página
-      navigate('/mostrarPeajes'); };
+    navigate('/mostrarPeajes');};
 
   return (
     
-    <Grid2 container columnSpacing={0} xs={12} height="100vh" display="flex" justifyContent="center" alignItems="center" marginLeft={10} marginRight={10}>
+    
+    <Grid2 container columnSpacing={0} xs={12}  display="flex" justifyContent="center" alignItems="center"
+     marginLeft={10} marginRight={10} marginTop={5} marginBottom={5}>
         <Box 
           component="form" 
           sx={{
@@ -45,25 +82,39 @@ export default function BusquedaTollRoute() {
           autoComplete="off" 
           onSubmit={handleSubmit}
         >
+
+      {/* Título centrado */}
+      <Grid item xs={12}>
+            <Typography variant="h5" gutterBottom align="center" sx={{ color: '#2196f3' }}>
+              Buscar Rutas
+            </Typography>
+          </Grid>
             
       <Typography variant="h6" gutterBottom>
         Por favor diligencie todos los campos *
       </Typography>
       
-      <form onSubmit={handleSubmit}>
+    
         <Grid container spacing={2} justifyContent="left">
           {/* Ciudad Origen */}
           <Grid item xs={4}>
             <FormControl fullWidth>
-              <InputLabel >Ciudad Origen</InputLabel>
+              <InputLabel >Ciudad Origen *</InputLabel>
               <Select
                 name="ciudadOrigen"
+                label="Ciudad Origen"
                 value={formData.ciudadOrigen}
                 onChange={handleChange}
                 required
               >
-                <MenuItem value="Medellín">Medellín</MenuItem>
-                <MenuItem value="Bogotá">Bogotá</MenuItem>
+                      <MenuItem value="Bogota">Bogota</MenuItem> 
+                      <MenuItem value="Medellin">Medellin</MenuItem>
+                      <MenuItem value="Cartagena">Cartagena</MenuItem>
+                      <MenuItem value="Cucuta">Cucuta</MenuItem>
+                      <MenuItem value="Barranquilla">Barranquilla</MenuItem>
+                      <MenuItem value="Cali">Cali</MenuItem>
+                      <MenuItem value="Pereira">Pereira</MenuItem>
+                      <MenuItem value="Armenia">Armenia</MenuItem>
                 {/* Otras ciudades */}
               </Select>
             </FormControl>
@@ -72,15 +123,22 @@ export default function BusquedaTollRoute() {
           {/* Ciudad Destino */}
           <Grid item xs={3}>
             <FormControl fullWidth>
-              <InputLabel>Ciudad Destino</InputLabel>
+              <InputLabel>Ciudad Destino *</InputLabel>
               <Select
                 name="ciudadDestino"
+                label="Ciudad Destino"
                 value={formData.ciudadDestino}
                 onChange={handleChange}
                 required
               >
-                <MenuItem value="Bogotá">Bogotá</MenuItem>
-                <MenuItem value="Medellín">Medellín</MenuItem>
+                     <MenuItem value="Bogota">Bogota</MenuItem> 
+                      <MenuItem value="Medellin">Medellin</MenuItem>
+                      <MenuItem value="Cartagena">Cartagena</MenuItem>
+                      <MenuItem value="Cucuta">Cucuta</MenuItem>
+                      <MenuItem value="Barranquilla">Barranquilla</MenuItem>
+                      <MenuItem value="Cali">Cali</MenuItem>
+                      <MenuItem value="Pereira">Pereira</MenuItem>
+                      <MenuItem value="Armenia">Armenia</MenuItem>
                 {/* Otras ciudades */}
               </Select>
             </FormControl>
@@ -93,22 +151,33 @@ export default function BusquedaTollRoute() {
             </Button>
           </Grid>
 
-          {/* Ruta */}
-          <Grid item xs={3}>
-            <FormControl fullWidth>
-              <InputLabel>Seleccionar la ruta</InputLabel>
-              <Select
-                name="ruta"
-                value={formData.ruta}
-                onChange={handleChange}
-                required
-              >
-                <MenuItem value="Ruta del Valle de Aburrá">Ruta del Valle de Aburrá</MenuItem>
-                <MenuItem value="Ruta del Oriente">Ruta del Oriente</MenuItem>
-                {/* Otras rutas */}
-              </Select>
-            </FormControl>
-          </Grid>
+      
+           {/* Ruta */}
+           <Grid item xs={3}>
+              <FormControl fullWidth>
+                <InputLabel>Seleccionar la ruta *</InputLabel>
+                <Select
+                  name="ruta"
+                  label="Seleccionar la ruta"
+                  value={formData.ruta}
+                  onChange={handleChange}
+                  required
+                >
+                  {rutas.length > 0 ? (
+                    rutas.map((ruta) => (
+                      <MenuItem key={ruta.id} value={ruta.name}>
+                        {ruta.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="">No hay rutas disponibles</MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+
+
+
 
           {/* Tipo de Eje (Ahora con imágenes) */}
           <Grid item xs={12}>
@@ -116,50 +185,59 @@ export default function BusquedaTollRoute() {
             <Grid container spacing={2} justifyContent="center">
               <Grid item>
                 <Button variant="outlined">
-                  <img src="https://via.placeholder.com/80x80.png?text=2+Ejes+sencillos" alt="2 Ejes sencillos" width="80" height="80" />
+                  <img src={Dosejes} alt="2 Ejes sencillos" width="80" height="80" />
                 </Button>
               </Grid>
               <Grid item>
                 <Button variant="outlined">
-                  <img src="https://via.placeholder.com/80x80.png?text=2+Ejes+llanta+pequeña" alt="3 Ejes" width="80" height="80" />
+                  <img src={Dosejespeque} alt="3 Ejes" width="80" height="80" />
                 </Button>
               </Grid>
               <Grid item>
                 <Button variant="outlined">
-                  <img src="https://via.placeholder.com/80x80.png?text=2+Ejes+llanta+grande" alt="2 Ejes llanta grande" width="80" height="80" />
+                  <img src={Dosejesgrande} alt="2 Ejes llanta grande" width="80" height="80" />
                 </Button>
               </Grid>
               <Grid item>
                 <Button variant="outlined">
-                  <img src="https://via.placeholder.com/80x80.png?text=3+Ejes+llanta+grande" alt="3 Ejes llanta grande" width="80" height="80" />
+                  <img src={Tresejesgrande} alt="3 Ejes llanta grande" width="80" height="80" />
                 </Button>
               </Grid>
               <Grid item>
                 <Button variant="outlined">
-                  <img src="https://via.placeholder.com/80x80.png?text=4+Ejes+llanta+grande" alt="4 Ejes llanta grande" width="80" height="80" />
+                  <img src={Cuatroejesgrande} alt="4 Ejes llanta grande" width="80" height="80" />
                 </Button>
               </Grid>
               <Grid item>
                 <Button variant="outlined">
-                  <img src="https://via.placeholder.com/80x80.png?text=5+Ejes+llanta+grande" alt="5 Ejes llanta grande" width="80" height="80" />
+                  <img src={Cincoejesgrande} alt="5 Ejes llanta grande" width="80" height="80" />
                 </Button>
               </Grid>
               <Grid item>
                 <Button variant="outlined">
-                  <img src="https://via.placeholder.com/80x80.png?text=6+Ejes+llanta+grande" alt="6 Ejes llanta grande" width="80" height="80" />
+                  <img src={Seisejesgrande} alt="6 Ejes llanta grande" width="80" height="80" />
                 </Button>
               </Grid>
             </Grid>
           </Grid>
 
-          {/* Botón Atrás */}
-          <Grid item xs={3} sx={{ marginTop: 2 }}>
-          <Button fullWidth type="submit" variant="contained" onClick={handleClick} >
-            Buscar Peajes en Rutas
-            </Button>
-          </Grid>
+          <Grid container spacing={2} justifyContent="center">
+  {/* Botón Atrás */}
+  <Grid item xs={12} sm={3} sx={{ marginTop: 2 }}>
+    <Button
+      fullWidth
+      type="submit"
+      variant="contained"
+      onClick={handleClick}
+    >
+      Buscar Peajes en Rutas
+    </Button>
+  </Grid>
+</Grid>
+
+
         </Grid>
-      </form>
+      
      </Box>
     </Grid2>
 

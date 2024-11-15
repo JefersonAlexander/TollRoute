@@ -1,14 +1,13 @@
-import React, { useState,  useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box, TextField } from '@mui/material';
 import { addToll, listRoutes } from '../services/tollrouteService';
-
 
 const AgregarPeaje = () => {
   const [formData, setFormData] = useState({
     ruta: '',
     nombrePeaje: '',
-    categorias: 0,
-    precios: ['', '', '', '', '', '', ''], // Para las categorías de precios
+    categorias: 0, // Categoria (5 o 7)
+    precios: ['', '', '', '', '', '', ''], // Precios de las categorías
     urlimagen: '',
   });
 
@@ -47,6 +46,12 @@ const AgregarPeaje = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Si la categoría es 5, asegurar que los campos 6 y 7 se envíen como 0
+    if (formData.categorias === 5) {
+      formData.precios[5] = '0';
+      formData.precios[6] = '0';
+    }
+
     // Preparar los datos para enviar al backend
     const tollData = {
       route: formData.ruta,
@@ -70,7 +75,7 @@ const AgregarPeaje = () => {
       setFormData({
         ruta: '',
         nombrePeaje: '',
-        categorias:'' ,
+        categorias: '',
         precios: ['', '', '', '', '', '', ''],
         urlimagen: '',
       });
@@ -79,21 +84,22 @@ const AgregarPeaje = () => {
     }
   };
 
-
   return (
-    <Box sx={{ padding: 3, border: '2px solid #2196f3', borderRadius: 2, marginTop:2, marginLeft:10, marginRight:10}}>
-      <Typography variant="h5" sx={{ color: '#2196f3', marginBottom: 3 }}>
+    <Box sx={{ padding: 3, border: '2px solid #2196f3', borderRadius: 2, marginTop: 2, marginLeft: 10, marginRight: 10 }}>
+      <Typography variant="h5" sx={{ color: '#2196f3', marginBottom: 3, textAlign: 'left' }}>
         Agregar Peaje
       </Typography>
       <form onSubmit={handleSubmit}>
-      <Grid container spacing={2} justifyContent="center">
+        <Grid container spacing={2} justifyContent="flex-start">
           {/* Fila con Ruta, Nombre Peaje, y Categoría */}
+          
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth>
-              <InputLabel>Ruta</InputLabel>
+              <InputLabel>Ruta*</InputLabel>
               <Select
                 name="ruta"
                 value={formData.ruta}
+                label="Ruta"
                 onChange={handleChange}
                 required
               >
@@ -105,7 +111,7 @@ const AgregarPeaje = () => {
               </Select>
             </FormControl>
           </Grid>
-
+  
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
@@ -114,43 +120,46 @@ const AgregarPeaje = () => {
               value={formData.nombrePeaje}
               onChange={handleChange}
               required
+              sx={{ textAlign: 'left' }} // Alineación a la izquierda del TextField
             />
           </Grid>
-
+  
           <Grid item xs={12} sm={4}>
-            <FormControl fullWidth>
-              <InputLabel>Categorías</InputLabel>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel>Categorías*</InputLabel>
               <Select
                 name="categorias"
+                label="Categorias"
                 value={formData.categorias}
                 onChange={handleChange}
                 required
               >
-                {[...Array(7).keys()].map((n) => (
-                  <MenuItem key={n} value={n + 1}>
-                    {n + 1}
-                  </MenuItem>
-                ))}
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={7}>7</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          
-
+  
+          <Typography variant="h7" sx={{ color: '#2196f3', marginTop:2 , marginLeft:2 }}>
+            Agregar precios según el tipo de vehículo
+          </Typography>
+  
           {/* Fila con los precios */}
-          <Grid container spacing={2} justifyContent="center" sx={{ marginTop: 2 }}>
-            {[...Array(7).keys()].map((index) => (
+          <Grid container spacing={1} justifyContent="flex-start" sx={{ marginTop:1, marginLeft:1 }}>
+            {[...Array(formData.categorias).keys()].map((index) => (
               <Grid item xs={12} sm={1.7} key={index}>
                 <TextField
                   fullWidth
-                  label={`$ ${index + 1}`}
+                  label={`$ Vehiculo Tipo ${index + 1}`}
                   value={formData.precios[index]}
                   onChange={(e) => handlePriceChange(index, e.target.value)}
                   required
+                  sx={{ textAlign: 'left' }} // Alineación a la izquierda del TextField
                 />
               </Grid>
             ))}
           </Grid>
-
+  
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -162,10 +171,11 @@ const AgregarPeaje = () => {
               required
             />
           </Grid>
+  
           {/* Botones */}
           <Grid item xs={6} sm={3}>
             <Button fullWidth variant="contained" type="submit">
-              Registrar
+              Agregar
             </Button>
           </Grid>
         </Grid>
@@ -175,3 +185,4 @@ const AgregarPeaje = () => {
 };
 
 export default AgregarPeaje;
+

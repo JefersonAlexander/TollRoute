@@ -32,7 +32,7 @@ function DrawerAppBar(props) {
     ? user.is_superuser
       ? ['Home', 'AgregarRuta', 'AgregarPeaje']
       : ['Home']
-    : ['Home','Contact'];
+    : ['Home','Register'];
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
@@ -55,9 +55,9 @@ function DrawerAppBar(props) {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: 'flex', color: '#2196f3' }}>
+    <Box sx={{ display: 'flex', color: '#2196f3'}}>
       <CssBaseline />
-      <AppBar component="nav" sx={{ backgroundColor: '#2196f3' }}>
+      <AppBar component="nav" sx={{ backgroundColor: '#2196f3'}}>
         <Toolbar>
           <IconButton
             color="inherit"

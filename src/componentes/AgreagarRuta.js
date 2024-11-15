@@ -128,8 +128,13 @@ const AgregarRuta = () => {
                       onChange={handleChange}
                       required
                     >
-                      <MenuItem value="Medellín">Medellín</MenuItem>
-                      <MenuItem value="Bogotá">Bogotá</MenuItem>
+                      <MenuItem value="Bogota">Bogota</MenuItem> 
+                      <MenuItem value="Medellin">Medellin</MenuItem>
+                      <MenuItem value="Cartagena">Cartagena</MenuItem>
+                      <MenuItem value="Cucuta">Cucuta</MenuItem>
+                      <MenuItem value="Barranquilla">Barranquilla</MenuItem>
+                      <MenuItem value="Cali">Cali</MenuItem>
+                      <MenuItem value="Pereira">Pereira</MenuItem>
                       <MenuItem value="Armenia">Armenia</MenuItem>
                     </Select>
                   </FormControl>
@@ -145,8 +150,13 @@ const AgregarRuta = () => {
                       onChange={handleChange}
                       required
                     >
-                      <MenuItem value="Medellín">Medellín</MenuItem>
-                      <MenuItem value="Bogotá">Bogotá</MenuItem>
+                      <MenuItem value="Bogota">Bogota</MenuItem> 
+                      <MenuItem value="Medellin">Medellin</MenuItem>
+                      <MenuItem value="Cartagena">Cartagena</MenuItem>
+                      <MenuItem value="Cucuta">Cucuta</MenuItem>
+                      <MenuItem value="Barranquilla">Barranquilla</MenuItem>
+                      <MenuItem value="Cali">Cali</MenuItem>
+                      <MenuItem value="Pereira">Pereira</MenuItem>
                       <MenuItem value="Armenia">Armenia</MenuItem>
                     </Select>
                   </FormControl>

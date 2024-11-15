@@ -4,16 +4,16 @@ import { API_BASE_URL } from '../config/api';
 
 export const registerUser = async (userData) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}register/`, userData);
-        alert('Usuario registrado exitosamente');
-        return response.data;
+      // Hacer la solicitud de registro
+      const response = await axios.post(`${API_BASE_URL}register/`, userData);
+      alert('Usuario registrado exitosamente');
+      return response.data;
     } catch (error) {
-        console.error('Error al registrar usuario:', error);
-        alert(error.response.data.error || 'Error al registrar usuario');
-        return null;
+      console.error('Error al registrar usuario:', error);
+      alert(error.response?.data?.error || 'Error al registrar usuario');
+      return null;
     }
-};
-
+  };
 
 export const loginUser = async (userData) => {
     try {

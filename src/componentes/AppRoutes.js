@@ -6,10 +6,12 @@ import Login from './Login'; // Importa el componente de la página Login
 import MostrarPeajes from './MostrarPeajes'; // Importa el componente de la página Login
 import AgregarRuta from './AgreagarRuta';
 import AgregarPeaje from './AgregarPeaje';
+import RegisterUser from './Register';
+import Footer from './Footer';
 
 function AppRoutes() {
   return (
-      <>
+      <Router>
       <DrawerAppBar />
       
       <Routes>
@@ -20,8 +22,12 @@ function AppRoutes() {
       <Route path="/agregarRuta" element={<AgregarRuta />} />
       <Route path="/agregarPeaje" element={<AgregarPeaje />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<RegisterUser />} />
       </Routes>
-      </>
+
+      <Footer/>
+
+      </Router>
   );
 }
 
