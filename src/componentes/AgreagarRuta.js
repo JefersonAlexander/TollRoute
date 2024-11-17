@@ -2,22 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box, TextField } from '@mui/material';
 import { addRoute, listRoutes } from '../services/tollrouteService';
 
-
 const AgregarRuta = () => {
-  
   // Estado para manejar la lista de rutas
   const [rutas, setRutas] = useState([]);
 
   // Estado para el formulario de agregar ruta
   const [formData, setFormData] = useState({
-    ciudadOrigen: '',
-    ciudadDestino: '',
-    codigo: '',
-    nombre: '',
-    descripcion: '',
+    code: '',
+    name: '',
+    originCity: '',
+    destinationCity: '',
+    description: '',
   });
 
- 
   // Función para manejar el cambio en los campos del formulario
   const handleChange = (e) => {
     setFormData({
@@ -45,11 +42,11 @@ const AgregarRuta = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const nuevaRuta = {
-      origin_city: formData.ciudadOrigen,
-      destination_city: formData.ciudadDestino,
-      code: formData.codigo,
-      name: formData.nombre,
-      description: formData.descripcion,
+      code: formData.code,  // Asegúrate de que estos nombres coincidan con lo que espera la API
+      name: formData.name,
+      originCity: formData.originCity,
+      destinationCity: formData.destinationCity,
+      description: formData.description,
     };
 
     const response = await addRoute(nuevaRuta);
@@ -57,11 +54,11 @@ const AgregarRuta = () => {
       alert('Ruta agregada exitosamente');
       obtenerRutas(); // Actualizar la lista de rutas
       setFormData({
-        ciudadOrigen: '',
-        ciudadDestino: '',
-        codigo: '',
-        nombre: '',
-        descripcion: '',
+        code: '',
+        name: '',
+        originCity: '',
+        destinationCity: '',
+        description: '',
       });
     } else {
       alert('Error al agregar la ruta.');
@@ -78,27 +75,25 @@ const AgregarRuta = () => {
           </Typography>
           <Box sx={{ backgroundColor: '#f5f5f5', padding: 2, borderRadius: 2 }}>
             {rutas.map((ruta, index) => (
-              <Box key={index} sx={{backgroundColor: '#fff', marginBottom: 1, padding: 1, border: '1px solid #2196f3', borderRadius: 2 }}>
+              <Box key={index} sx={{ backgroundColor: '#fff', marginBottom: 1, padding: 1, border: '1px solid #2196f3', borderRadius: 2 }}>
                 <Typography variant="h6" sx={{ color: '#2196f3' }} >{ruta.name}</Typography>
                 <Grid container spacing={2}>
-            {/* Origen y Destino en una fila */}
-            <Grid item xs={6}>
-              <Typography sx={{ color: '#2196f3' }}>Origen:</Typography>
-              <Typography sx={{ color: '#000' }}>{ruta.origin_city}</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography sx={{ color: '#2196f3' }}>Destino:</Typography>
-              <Typography sx={{ color: '#000', marginBottom: 1 }}>{ruta.destination_city}</Typography>
-            </Grid>
-          </Grid>
+                  {/* Origen y Destino en una fila */}
+                  <Grid item xs={6}>
+                    <Typography sx={{ color: '#2196f3' }}>Origen:</Typography>
+                    <Typography sx={{ color: '#000' }}>{ruta.originCity}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography sx={{ color: '#2196f3' }}>Destino:</Typography>
+                    <Typography sx={{ color: '#000', marginBottom: 1 }}>{ruta.destinationCity}</Typography>
+                  </Grid>
 
+                  <Grid item xs={6}>
+                    <Typography sx={{ color: '#2196f3' }}>Descripción:</Typography>
+                    <Typography sx={{ color: '#000', marginBottom: 1 }}>{ruta.description}</Typography>
+                  </Grid>
+                </Grid>
 
-                <Typography sx={{ color: '#2196f3' }}>Peajes:</Typography>
-                <ul>
-                {(ruta.peajes || []).map((peaje, index) => (
-                    <li key={index}>{peaje}</li>
-                  ))}
-                </ul>
               </Box>
             ))}
           </Box>
@@ -123,8 +118,8 @@ const AgregarRuta = () => {
                   <FormControl fullWidth>
                     <InputLabel>Ciudad Origen</InputLabel>
                     <Select
-                      name="ciudadOrigen"
-                      value={formData.ciudadOrigen}
+                      name="originCity"  // Este nombre debe coincidir con el que espera la API
+                      value={formData.originCity}
                       onChange={handleChange}
                       required
                     >
@@ -145,8 +140,8 @@ const AgregarRuta = () => {
                   <FormControl fullWidth>
                     <InputLabel>Ciudad Destino</InputLabel>
                     <Select
-                      name="ciudadDestino"
-                      value={formData.ciudadDestino}
+                      name="destinationCity"  // Este nombre debe coincidir con el que espera la API
+                      value={formData.destinationCity}
                       onChange={handleChange}
                       required
                     >
@@ -167,8 +162,8 @@ const AgregarRuta = () => {
                   <TextField
                     fullWidth
                     label="Código"
-                    name="codigo"
-                    value={formData.codigo}
+                    name="code"  // Este nombre debe coincidir con el que espera la API
+                    value={formData.code}
                     onChange={handleChange}
                     required
                   />
@@ -179,8 +174,8 @@ const AgregarRuta = () => {
                   <TextField
                     fullWidth
                     label="Nombre"
-                    name="nombre"
-                    value={formData.nombre}
+                    name="name"  // Este nombre debe coincidir con el que espera la API
+                    value={formData.name}
                     onChange={handleChange}
                     required
                   />
@@ -191,8 +186,8 @@ const AgregarRuta = () => {
                   <TextField
                     fullWidth
                     label="Descripción"
-                    name="descripcion"
-                    value={formData.descripcion}
+                    name="description"  // Este nombre debe coincidir con el que espera la API
+                    value={formData.description}
                     onChange={handleChange}
                     multiline
                     rows={4}
