@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Alert,Select, MenuItem,FormControl,InputLabel, Grid } from '@mui/material';
 import { registerUser } from '../services/authenticationService';  // Asumiendo que tu función registerUser está en un archivo api.js
 import Box from '@mui/material/Box';
+import { Link } from 'react-router-dom'; // Importar Link para la navegación
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate
+
 const RegisterUser = () => {
   // State para almacenar los datos del formulario y el mensaje de error o éxito
   const [userData, setUserData] = useState({
@@ -16,6 +19,7 @@ const RegisterUser = () => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate(); // Inicializar useNavigate
 
   // Manejar el cambio de valores en los campos del formulario
   const handleChange = (e) => {
@@ -29,8 +33,7 @@ const RegisterUser = () => {
     const response = await registerUser(userData);
 
     if (response) {
-      setSuccessMessage('Usuario registrado exitosamente');
-      setErrorMessage('');
+      navigate('/home'); // Redireccionar usando useNavigate
     } else {
       setSuccessMessage('');
       setErrorMessage('Error al registrar usuario');
@@ -63,9 +66,9 @@ const RegisterUser = () => {
 
       <Typography variant="h4" gutterBottom align="center">Registro de Usuario</Typography>
 
-      <Grid item xs={12}>
-      {successMessage && <Alert severity="success">{successMessage}</Alert>}
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+      <Grid item xs={12} sx={{ mt: 2, mb: 2 }}> {/* Margen superior y margen inferior */}
+        {successMessage && <Alert severity="success">{successMessage}</Alert>}
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
       </Grid>
       
         <Grid container spacing={2}>
@@ -161,7 +164,18 @@ const RegisterUser = () => {
             >
               Registrar Usuario
             </Button>
+
+            {/* Enlace para ir a la página de registro */}
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            ¿Ya tienes una cuenta?{' '}
+            <Link to="/login" style={{ textDecoration: 'none', color: '#2196f3' }}>
+              Inicia Sesión
+            </Link>
+          </Typography>
           </Grid>
+
+          
+
         </Grid>
       </Box>
     </Container>

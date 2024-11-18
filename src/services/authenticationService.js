@@ -6,11 +6,9 @@ export const registerUser = async (userData) => {
     try {
       // Hacer la solicitud de registro
       const response = await axios.post(`${API_BASE_URL}register/`, userData);
-      alert('Usuario registrado exitosamente');
       return response.data;
     } catch (error) {
       console.error('Error al registrar usuario:', error);
-      alert(error.response?.data?.error || 'Error al registrar usuario');
       return null;
     }
   };
@@ -25,7 +23,7 @@ export const loginUser = async (userData) => {
         console.log('Refresh Token:', refresh);
 
         if (!access || !refresh) {
-            alert('No se recibieron tokens del servidor');
+            
             return null;
         }
 
@@ -42,11 +40,11 @@ export const loginUser = async (userData) => {
 
         const user = userResponse.data;
         console.log('Datos del usuario:', user);
-        alert('Login exitoso');
+        ;
         return user;
     } catch (error) {
         console.error('Error al iniciar sesión:', error.response?.data);
-        alert(error.response?.data?.detail || 'Credenciales incorrectas');
+       
         return null;
     }
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box, TextField } from '@mui/material';
+import { Grid, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box, TextField, Alert } from '@mui/material';
 import { addRate, listPeajes } from '../services/tollrouteService';
 
 const AgregarPrecios = () => {
@@ -11,13 +11,17 @@ const AgregarPrecios = () => {
   const [peajes, setPeajes] = useState([]); // Lista de peajes
   const [numberCategories, setNumberCategories] = useState(5); // Número de categorías del peaje seleccionado
 
+  // Estado para los mensajes de éxito o error
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   // Obtener la lista de peajes desde la API
   const obtenerPeajes = async () => {
     const data = await listPeajes();
     if (data) {
       setPeajes(data);
     } else {
-      alert('No se pudieron obtener los peajes.');
+      setErrorMessage('No se pudieron obtener los peajes.');
     }
   };
 
@@ -69,13 +73,15 @@ const AgregarPrecios = () => {
     const response = await addRate(rateData);
 
     if (response) {
-      alert('Precios de peaje agregados exitosamente');
+      setSuccessMessage('Precios de peaje agregados exitosamente');
+      setErrorMessage(''); // Limpiar el mensaje de error si la operación es exitosa
       setFormData({
         peaje: '',
         precios: Array(7).fill(''),
       });
     } else {
-      alert('Error al agregar los precios del peaje.');
+      setErrorMessage('Error al agregar los precios del peaje.');
+      setSuccessMessage(''); // Limpiar el mensaje de éxito si hay un error
     }
   };
 
@@ -85,6 +91,11 @@ const AgregarPrecios = () => {
         <Typography variant="h5" sx={{ color: '#2196f3', marginBottom: 3 }}>
           Agregar Precios Peaje
         </Typography>
+
+        {/* Mostrar los mensajes de éxito y error */}
+        {successMessage && <Alert severity="success" sx={{ mb: 2 }}>{successMessage}</Alert>}
+        {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
+
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             {/* Selección del peaje */}

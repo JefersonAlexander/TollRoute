@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box, TextField } from '@mui/material';
+import { Grid, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box, TextField, Alert } from '@mui/material';
 import { addToll, listRoutes } from '../services/tollrouteService';
 import AgregarPrecios from './AgregarPrecios';
 
@@ -14,13 +14,17 @@ const AgregarPeaje = () => {
 
   const [rutas, setRutas] = useState([]); // Estado para almacenar las rutas obtenidas
 
+  // Estado para los mensajes de éxito o error
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   // Obtener la lista de rutas desde la API
   const obtenerRutas = async () => {
     const data = await listRoutes();
     if (data) {
       setRutas(data);
     } else {
-      alert('No se pudieron obtener las rutas.');
+      setErrorMessage('No se pudieron obtener las rutas.');
     }
   };
 
@@ -55,7 +59,8 @@ const AgregarPeaje = () => {
     const response = await addToll(tollData);
 
     if (response) {
-      alert('Peaje agregado exitosamente');
+      setSuccessMessage('Peaje agregado exitosamente');
+      setErrorMessage(''); // Limpiar el mensaje de error si la operación es exitosa
       setFormData({
         ruta: '',
         nombrePeaje: '',
@@ -64,7 +69,8 @@ const AgregarPeaje = () => {
         urlconsesion: '',
       });
     } else {
-      alert('Error al agregar el peaje.');
+      setErrorMessage('Error al agregar el peaje.');
+      setSuccessMessage(''); // Limpiar el mensaje de éxito si hay un error
     }
   };
 
@@ -74,6 +80,11 @@ const AgregarPeaje = () => {
         <Typography variant="h5" sx={{ color: '#2196f3', marginBottom: 3, textAlign: 'left' }}>
           Agregar Peaje
         </Typography>
+
+        {/* Mostrar los mensajes de éxito y error */}
+        {successMessage && <Alert severity="success" sx={{ mb: 2 }}>{successMessage}</Alert>}
+        {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
+
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2} justifyContent="flex-start">
             {/* Selección de la ruta */}
@@ -153,16 +164,15 @@ const AgregarPeaje = () => {
 
             {/* Botón de enviar */}
             <Grid container justifyContent="center" marginTop={2}>
-            <Grid item xs={6} sm={4}>
+              <Grid item xs={6} sm={4}>
                 <Button fullWidth variant="contained" type="submit">
-                Agregar Peaje
+                  Agregar Peaje
                 </Button>
+              </Grid>
             </Grid>
-          </Grid>
           </Grid>
         </form>
       </Box>
-      
 
       {/* Componente para agregar precios de peajes */}
       <AgregarPrecios />
@@ -171,3 +181,4 @@ const AgregarPeaje = () => {
 };
 
 export default AgregarPeaje;
+

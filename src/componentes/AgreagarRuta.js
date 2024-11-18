@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box, TextField } from '@mui/material';
-import { addRoute, listRoutes } from '../services/tollrouteService';
+import { Grid, Button, MenuItem, Select, InputLabel, FormControl, Typography, Box, TextField, Alert } from '@mui/material';
+import { addRoute, listRoutes, listCity } from '../services/tollrouteService';
 
 const AgregarRuta = () => {
   // Estado para manejar la lista de rutas
   const [rutas, setRutas] = useState([]);
+  const [ciudades, setCiudades] = useState([]); // Estado para almacenar las ciudades
 
   // Estado para el formulario de agregar ruta
   const [formData, setFormData] = useState({
@@ -15,6 +16,10 @@ const AgregarRuta = () => {
     description: '',
   });
 
+  // Estado para los mensajes de éxito o error
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   // Función para manejar el cambio en los campos del formulario
   const handleChange = (e) => {
     setFormData({
@@ -23,19 +28,30 @@ const AgregarRuta = () => {
     });
   };
 
+  // Función para obtener las ciudades desde el servicio
+  const obtenerCiudades = async () => {
+    const ciudadesData = await listCity(); // Llamamos al servicio para obtener las ciudades
+    if (ciudadesData) {
+      setCiudades(ciudadesData); // Actualizamos el estado con las ciudades obtenidas
+    } else {
+      setErrorMessage('No se pudieron obtener las ciudades.');
+    }
+  };
+
   // Función para obtener la lista de rutas desde la API
   const obtenerRutas = async () => {
     const data = await listRoutes();
     if (data) {
       setRutas(data);
     } else {
-      alert('No se pudieron obtener las rutas.');
+      setErrorMessage('No se pudieron obtener las rutas.');
     }
   };
 
-  // Usar useEffect para cargar las rutas al montar el componente
+  // Usar useEffect para cargar las rutas y ciudades al montar el componente
   useEffect(() => {
-    obtenerRutas();
+    obtenerCiudades(); // Llamamos a la función para obtener las ciudades
+    obtenerRutas(); // Llamamos a la función para obtener las rutas
   }, []);
 
   // Función para manejar el envío del formulario
@@ -51,7 +67,8 @@ const AgregarRuta = () => {
 
     const response = await addRoute(nuevaRuta);
     if (response) {
-      alert('Ruta agregada exitosamente');
+      setSuccessMessage('Ruta agregada exitosamente');
+      setErrorMessage(''); // Limpiar el mensaje de error si la operación es exitosa
       obtenerRutas(); // Actualizar la lista de rutas
       setFormData({
         code: '',
@@ -61,7 +78,8 @@ const AgregarRuta = () => {
         description: '',
       });
     } else {
-      alert('Error al agregar la ruta.');
+      setErrorMessage('Error al agregar la ruta.');
+      setSuccessMessage(''); // Limpiar el mensaje de éxito si hay un error
     }
   };
 
@@ -93,7 +111,6 @@ const AgregarRuta = () => {
                     <Typography sx={{ color: '#000', marginBottom: 1 }}>{ruta.description}</Typography>
                   </Grid>
                 </Grid>
-
               </Box>
             ))}
           </Box>
@@ -111,6 +128,10 @@ const AgregarRuta = () => {
               borderRadius: 2,
             }}
           >
+            {/* Mostrar los mensajes de éxito y error */}
+            {successMessage && <Alert severity="success" sx={{ mb: 2 }}>{successMessage}</Alert>}
+            {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
+
             <form onSubmit={handleSubmit}>
               <Grid container spacing={2}>
                 {/* Ciudad Origen */}
@@ -118,19 +139,16 @@ const AgregarRuta = () => {
                   <FormControl fullWidth>
                     <InputLabel>Ciudad Origen</InputLabel>
                     <Select
-                      name="originCity"  // Este nombre debe coincidir con el que espera la API
+                      name="originCity"
                       value={formData.originCity}
                       onChange={handleChange}
                       required
                     >
-                      <MenuItem value="Bogota">Bogota</MenuItem> 
-                      <MenuItem value="Medellin">Medellin</MenuItem>
-                      <MenuItem value="Cartagena">Cartagena</MenuItem>
-                      <MenuItem value="Cucuta">Cucuta</MenuItem>
-                      <MenuItem value="Barranquilla">Barranquilla</MenuItem>
-                      <MenuItem value="Cali">Cali</MenuItem>
-                      <MenuItem value="Pereira">Pereira</MenuItem>
-                      <MenuItem value="Armenia">Armenia</MenuItem>
+                      {ciudades.map((ciudad) => (
+                        <MenuItem key={ciudad.id} value={ciudad.name}>
+                          {ciudad.name}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -140,19 +158,16 @@ const AgregarRuta = () => {
                   <FormControl fullWidth>
                     <InputLabel>Ciudad Destino</InputLabel>
                     <Select
-                      name="destinationCity"  // Este nombre debe coincidir con el que espera la API
+                      name="destinationCity"
                       value={formData.destinationCity}
                       onChange={handleChange}
                       required
                     >
-                      <MenuItem value="Bogota">Bogota</MenuItem> 
-                      <MenuItem value="Medellin">Medellin</MenuItem>
-                      <MenuItem value="Cartagena">Cartagena</MenuItem>
-                      <MenuItem value="Cucuta">Cucuta</MenuItem>
-                      <MenuItem value="Barranquilla">Barranquilla</MenuItem>
-                      <MenuItem value="Cali">Cali</MenuItem>
-                      <MenuItem value="Pereira">Pereira</MenuItem>
-                      <MenuItem value="Armenia">Armenia</MenuItem>
+                      {ciudades.map((ciudad) => (
+                        <MenuItem key={ciudad.id} value={ciudad.name}>
+                          {ciudad.name}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -162,7 +177,7 @@ const AgregarRuta = () => {
                   <TextField
                     fullWidth
                     label="Código"
-                    name="code"  // Este nombre debe coincidir con el que espera la API
+                    name="code"
                     value={formData.code}
                     onChange={handleChange}
                     required
@@ -174,7 +189,7 @@ const AgregarRuta = () => {
                   <TextField
                     fullWidth
                     label="Nombre"
-                    name="name"  // Este nombre debe coincidir con el que espera la API
+                    name="name"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -186,7 +201,7 @@ const AgregarRuta = () => {
                   <TextField
                     fullWidth
                     label="Descripción"
-                    name="description"  // Este nombre debe coincidir con el que espera la API
+                    name="description"
                     value={formData.description}
                     onChange={handleChange}
                     multiline
@@ -216,3 +231,4 @@ const AgregarRuta = () => {
 };
 
 export default AgregarRuta;
+

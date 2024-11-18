@@ -4,11 +4,9 @@ import { API_BASE_URL_ROUTE } from '../config/api';
 export const addRoute = async (routeData) => {
     try {
         const response = await axios.post(`${API_BASE_URL_ROUTE}CreateRoute/`, routeData);
-        alert('Ruta creada exitosamente');
         return response.data;
     } catch (error) {
         console.error('Error al agregar nueva ruta:', error);
-        alert(error.response?.data?.error || error.message || 'Error al agregar ruta');
         return null;
     }
 };
@@ -18,11 +16,9 @@ export const addRoute = async (routeData) => {
 export const addToll = async (tollData) => {
     try {
         const response = await axios.post(`${API_BASE_URL_ROUTE}CreateToll/`, tollData);
-        alert('Peaje creado exitosamente');
         return response.data;
     } catch (error) {
         console.error('Error al agregar nuevo peaje:', error);
-        alert(error.response?.data?.error || 'Error al agregar peaje');
         return null;
     }
 };
@@ -31,11 +27,9 @@ export const addToll = async (tollData) => {
 export const addRate = async (tollData) => {
     try {
         const response = await axios.post(`${API_BASE_URL_ROUTE}CreateRate/`, tollData);
-        alert('Precias de peaje creados ');
         return response.data;
     } catch (error) {
         console.error('Error al agregar los precios:', error);
-        alert(error.response?.data?.error || 'Error al agregar los precios');
         return null;
     }
 };
@@ -79,78 +73,61 @@ export const listPeajes = async () => {
 
 
 
+export const filterRoutesByCities = async (originCity, destinationCity) => {
+    const routes = await listRoutes(); // Obtener todas las rutas
+    if (routes) {
+        // Filtrar rutas por ciudad de origen y destino
+        const filteredRoutes = routes.filter(
+            route =>
+                route.originCity.toLowerCase() === originCity.toLowerCase() &&
+                route.destinationCity.toLowerCase() === destinationCity.toLowerCase()
+        );
+        return filteredRoutes;
+    }
+    return [];
+};
 
+export const getPeajesForRoute = async (routeId) => {
+    const tolls = await listPeajes(); // Obtener todos los peajes
+    if (tolls) {
+        // Filtrar peajes que pertenecen a la ruta seleccionada
+        const filteredTolls = tolls.filter(toll => toll.routeId === routeId);
+        return filteredTolls;
+    }
+    return [];
+};
 
-
-
-
-
-
-export const getRoutesByCities = async (originCity, destinationCity) => {
-    const token = localStorage.getItem('accessToken');
+// Función para obtener los precios
+export const listRate = async () => {
+    const token = localStorage.getItem('accessToken'); // Obtener el token de acceso
 
     try {
-        // Solicitar las rutas filtradas por ciudad de origen y destino
-        const response = await axios.get(`${API_BASE_URL_ROUTE}listRoutes/`, {
+        const response = await axios.get(`${API_BASE_URL_ROUTE}GetRate/`, {
             headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            params: {
-                origin_city: originCity,
-                destination_city: destinationCity,
+                Authorization: `Bearer ${token}`, // Enviar el token de autenticación
             },
         });
-
-        // Si no se encuentran rutas, devolver un array vacío
-        if (response.data.length === 0) {
-            alert('No se encontraron rutas con las ciudades seleccionadas.');
-            return [];
-        }
-
-        return response.data; // Devuelve las rutas encontradas
+        return response.data; // Retornar los datos de los precios
     } catch (error) {
-        console.error('Error al obtener las rutas filtradas:', error);
-        alert('Error al obtener las rutas. Verifique la conexión y los filtros seleccionados.');
-        return [];
+        console.error('Error al obtener los precios:', error);
+        return null;
     }
 };
 
 
-
-
-export const filterTolls = async (filters) => {
-    const token = localStorage.getItem('accessToken'); // Obtener el token de autenticación
+// Función para obtener los municipios
+export const listCity = async () => {
+    const token = localStorage.getItem('accessToken'); // Obtener el token de acceso
 
     try {
-        // Obtener las rutas filtradas con las ciudades de origen y destino
-        const routes = await getRoutesByCities(filters.originCity, filters.destinationCity);
-
-        // Si no se encuentran rutas, retornar null
-        if (routes.length === 0) {
-            return null;
-        }
-
-        // Crear el array de ids de las rutas encontradas
-        const routeIds = routes.map(route => route.id);
-
-        // Ahora filtrar los peajes basados en las rutas obtenidas
-        const response = await axios.get(`${API_BASE_URL_ROUTE}filterTolls/`, {
+        const response = await axios.get(`${API_BASE_URL_ROUTE}GetCity/`, {
             headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            params: {
-                route_ids: routeIds, // Usar los ids de las rutas filtradas
+                Authorization: `Bearer ${token}`, // Enviar el token de autenticación
             },
         });
-
-        return response.data;
+        return response.data; // Retornar los datos de los municipios
     } catch (error) {
-        console.error('Error al obtener los peajes filtrados:', error);
-        if (error.response?.status === 404) {
-            alert('No se encontraron peajes con las rutas filtradas.');
-        } else {
-            alert('Error al obtener los peajes. Verifique los filtros y la conexión.');
-        }
+        console.error('Error al obtener los precios:', error);
         return null;
     }
 };
